@@ -7,6 +7,7 @@ import Gmail_API_Lib
 import Track_API_Lib
 from models import BaseResponse, GeneralChecksResponse, LateCheckinsCheckResponse
 import lovely_logger as log
+from pydantic import BaseModel
 
 app = FastAPI(
     title="ScotHeymanApi",
@@ -22,8 +23,11 @@ def startup():
     log.init("file.log")
     sched.start()
 
-@app.post("/example")
-def example(number_input:int) -> str:
+class ExampleRequest(BaseModel):
+    number_input:int
+
+@app.post("/example", response_model=BaseResponse)
+def example(request:ExampleRequest) :
     """
     Example POST Method
     """
@@ -31,7 +35,7 @@ def example(number_input:int) -> str:
 
     try:
         # Some logic
-        response.message = f"{number_input * 2}"
+        response.message = f"{request.number_input * 2}"
         response.success = True
 
     except Exception as e:
